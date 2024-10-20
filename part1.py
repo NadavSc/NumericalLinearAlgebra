@@ -5,8 +5,7 @@ from time import time
 matplotlib.use('TkAgg')
 
 
-def construct_A(lambda_, theta, W, D):
-    delta = lambda_/10
+def construct_A(lambda_, theta, delta, W, D):
     k = 2 * np.pi/lambda_
     N = int(W/delta)
 
@@ -27,8 +26,8 @@ def construct_A(lambda_, theta, W, D):
     return A
 
 
-def compute_rank(S, threshold):
-    return np.sum(S > threshold * S[0])
+def compute_rank(s_values, threshold):
+    return np.sum(s_values > threshold)
 
 
 def compute_SVD(A):
@@ -47,12 +46,14 @@ if __name__ == '__main__':
     for section in sections:
         if section == 'a':
             lambda_ = 1
+            delta = lambda_ / 10
             theta = np.pi / 2
             W = 4 * lambda_
             alpha = 1
             D = alpha * W
             A = construct_A(lambda_=lambda_,
                             theta=theta,
+                            delta=delta,
                             W=W,
                             D=D)
 
@@ -82,9 +83,10 @@ if __name__ == '__main__':
 
         if section == 'b':
             lambda_ = 1
+            delta = lambda_ / 10
             theta = np.pi / 2
-            N_values = [40, 80, 160, 320, 640]
-            W_values = [4 * lambda_ * (2 ** i) for i in range(len(N_values))]
+            W_values = [4 * lambda_ * (2 ** i) for i in range(7)]
+            N_values = [int(w/delta) for w in W_values]
 
             D_cases = {
                 'D = 4λ': lambda W: 4 * lambda_,
@@ -99,6 +101,7 @@ if __name__ == '__main__':
                     D = D_func(W)
                     A = construct_A(lambda_=lambda_,
                                     theta=theta,
+                                    delta=delta,
                                     W=W,
                                     D=D)
                     s_values, svd_time, ranks, condition_number = compute_SVD(A)
@@ -123,6 +126,7 @@ if __name__ == '__main__':
             plt.grid(True, which="both", ls="-", alpha=0.5)
             plt.savefig('part1_b_svd_complexity.png', dpi=300, bbox_inches='tight', pad_inches=0)
             plt.show()
+            plt.close()
 
             for case, data in results.items():
                 plt.semilogx(data['N'], [r[0] for r in data['ranks']], 'o-', label=f'{case}, τ=1e-2')
@@ -136,6 +140,7 @@ if __name__ == '__main__':
             plt.grid(True, which="both", ls="-", alpha=0.5)
             plt.savefig('part1_b_rank.png', dpi=300, bbox_inches='tight', pad_inches=0)
             plt.show()
+            plt.close()
 
             for case, data in results.items():
                 plt.loglog(data['N'], data['condition'], 'o-', label=case)
