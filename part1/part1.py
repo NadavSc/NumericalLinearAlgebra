@@ -1,4 +1,5 @@
 import os
+import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
@@ -63,8 +64,6 @@ if __name__ == '__main__':
                             D=D)
             info('Section A: A has been constructed')
 
-            info('Section A: A has been constructed')
-
             # Plot Matrix A
             plt.imshow(np.abs(A))
             x_ticks = np.arange(0, len(A)+1, 5)[1:]-1
@@ -75,7 +74,7 @@ if __name__ == '__main__':
             plt.title('Absolute Values of Matrix A')
             plt.xlabel('Transmitter Index')
             plt.ylabel('Receiver Index')
-            plt.savefig('ex1_a_constructA.png', dpi=300, bbox_inches='tight', pad_inches=0)
+            plt.savefig(r'ex1_a_constructA.png', dpi=300, bbox_inches='tight', pad_inches=0)
             plt.show()
 
             # Plot Matrix A Singular Values
@@ -87,7 +86,7 @@ if __name__ == '__main__':
             plt.title('Singular Values of Matrix A')
             plt.xlabel('Transmitter Index')
             plt.ylabel('Singular Values')
-            plt.savefig('ex1_a_svdA_log.png', dpi=300, bbox_inches='tight', pad_inches=0)
+            plt.savefig(r'ex1_a_svdA_log.png', dpi=300, bbox_inches='tight', pad_inches=0)
             plt.show()
 
         ## TODO: add proper asymptotic lines to figures
@@ -103,24 +102,31 @@ if __name__ == '__main__':
                 'D = W': lambda W: W,
                 'D = W²/λ': lambda W: W ** 2 / lambda_
             }
+            if os.path.exists(r'results_b.pkl'):
+                with open(r'results_b.pkl', 'rb') as f:
+                    results = pickle.load(f)
+                info('results_b.pkl has been loaded')
+            else:
+                results = {case: {'N': [], 'time': [], 'ranks': [], 'condition': []} for case in D_cases}
 
-            results = {case: {'N': [], 'time': [], 'ranks': [], 'condition': []} for case in D_cases}
+                for case, D_func in D_cases.items():
+                    for N, W in zip(N_values, W_values):
+                        D = D_func(W)
+                        A = construct_A(lambda_=lambda_,
+                                        theta=theta,
+                                        delta=delta,
+                                        W=W,
+                                        D=D)
+                        info(f'Section B: A with {case}, W={W}, N={N} has been constructed')
+                        s_values, svd_time, ranks, condition_number = compute_SVD(A)
+                        info(f'Section B: SVD has been calculated')
+                        results[case]['N'].append(N)
+                        results[case]['time'].append(svd_time)
+                        results[case]['ranks'].append(ranks)
+                        results[case]['condition'].append(condition_number)
+                with open(r'results_b.pkl', 'wb') as f:
+                    pickle.dump(results, f)
 
-            for case, D_func in D_cases.items():
-                for N, W in zip(N_values, W_values):
-                    D = D_func(W)
-                    A = construct_A(lambda_=lambda_,
-                                    theta=theta,
-                                    delta=delta,
-                                    W=W,
-                                    D=D)
-                    info(f'Section B: A with {case}, W={W}, N={N} has been constructed')
-                    s_values, svd_time, ranks, condition_number = compute_SVD(A)
-                    info(f'Section B: SVD has been calculated')
-                    results[case]['N'].append(N)
-                    results[case]['time'].append(svd_time)
-                    results[case]['ranks'].append(ranks)
-                    results[case]['condition'].append(condition_number)
             for case, data in results.items():
                 plt.loglog(data['N'], data['time'], 'o', label=case, markersize=8)
 
