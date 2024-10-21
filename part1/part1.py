@@ -1,8 +1,13 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
+
 from time import time
+from logger import set_logger, info
 matplotlib.use('TkAgg')
+
+set_logger(log_path=os.path.join('../logger', 'log.txt'))
 
 
 def construct_A(lambda_, theta, delta, W, D):
@@ -36,9 +41,9 @@ def compute_SVD(A):
     svd_time = time() - start_time
 
     ranks = [compute_rank(s_values, tau) for tau in [1e-2, 1e-5, 1e-8]]
-    condition_number = s_values[0] / s_values[-1]
+    condition_numbers = s_values[0] / s_values[np.array(ranks)-1]
 
-    return s_values, svd_time, ranks, condition_number
+    return s_values, svd_time, ranks, condition_numbers
 
 
 if __name__ == '__main__':
@@ -56,6 +61,9 @@ if __name__ == '__main__':
                             delta=delta,
                             W=W,
                             D=D)
+            info('Section A: A has been constructed')
+
+            info('Section A: A has been constructed')
 
             # Plot Matrix A
             plt.imshow(np.abs(A))
@@ -71,7 +79,8 @@ if __name__ == '__main__':
             plt.show()
 
             # Plot Matrix A Singular Values
-            s_values, svd_time, ranks, condition_number = compute_SVD(A)
+            s_values, _, _, _ = compute_SVD(A)
+            info('Section A: SVD has been calculated')
             plt.scatter(np.arange(len(s_values)), s_values)
             plt.yscale('log')  # Set y-axis to log scale
             plt.grid(True, which='both', linestyle='--', linewidth=0.5)  # Add grid
@@ -81,6 +90,7 @@ if __name__ == '__main__':
             plt.savefig('ex1_a_svdA_log.png', dpi=300, bbox_inches='tight', pad_inches=0)
             plt.show()
 
+        ## TODO: add proper asymptotic lines to figures
         if section == 'b':
             lambda_ = 1
             delta = lambda_ / 10
@@ -104,15 +114,15 @@ if __name__ == '__main__':
                                     delta=delta,
                                     W=W,
                                     D=D)
+                    info(f'Section B: A with {case}, W={W}, N={N} has been constructed')
                     s_values, svd_time, ranks, condition_number = compute_SVD(A)
-
+                    info(f'Section B: SVD has been calculated')
                     results[case]['N'].append(N)
                     results[case]['time'].append(svd_time)
                     results[case]['ranks'].append(ranks)
                     results[case]['condition'].append(condition_number)
-
             for case, data in results.items():
-                plt.loglog(data['N'], data['time'], 'o-', label=case)
+                plt.loglog(data['N'], data['time'], 'o', label=case, markersize=8)
 
             # Theoretical complexity O(N^3)
             N_theory = np.logspace(1.5, 3, 100)
@@ -129,9 +139,9 @@ if __name__ == '__main__':
             plt.close()
 
             for case, data in results.items():
-                plt.semilogx(data['N'], [r[0] for r in data['ranks']], 'o-', label=f'{case}, τ=1e-2')
-                plt.semilogx(data['N'], [r[1] for r in data['ranks']], 's-', label=f'{case}, τ=1e-5')
-                plt.semilogx(data['N'], [r[2] for r in data['ranks']], '^-', label=f'{case}, τ=1e-8')
+                plt.semilogx(data['N'], [r[0] for r in data['ranks']], 'o', label=f'{case}, τ=1e-2')
+                plt.semilogx(data['N'], [r[1] for r in data['ranks']], 's', label=f'{case}, τ=1e-5')
+                plt.semilogx(data['N'], [r[2] for r in data['ranks']], '^', label=f'{case}, τ=1e-8')
 
             plt.xlabel('Number of Antennas (N)')
             plt.ylabel('Rank')
@@ -142,14 +152,14 @@ if __name__ == '__main__':
             plt.show()
             plt.close()
 
-            for case, data in results.items():
-                plt.loglog(data['N'], data['condition'], 'o-', label=case)
+            for i, (case, data) in enumerate(results.items()):
+                plt.loglog(data['N'], data['condition'], 'o', label=['τ=1e-2', 'τ=1e-5', 'τ=1e-8'])
+                plt.xlabel('Number of Antennas (N)')
+                plt.ylabel('Condition Number')
+                plt.title(f'Condition Number of Matrix A, {case}')
+                plt.legend()
+                plt.grid(True, which="both", ls="-", alpha=0.5)
 
-            plt.xlabel('Number of Antennas (N)')
-            plt.ylabel('Condition Number')
-            plt.title('Condition Number of Matrix A')
-            plt.legend()
-            plt.grid(True, which="both", ls="-", alpha=0.5)
-
-            plt.savefig('part1_b_condition.png', dpi=300, bbox_inches='tight', pad_inches=0)
-            plt.show()
+                plt.savefig(f'part1_b_condition_{i}.png', dpi=300, bbox_inches='tight', pad_inches=0)
+                plt.show()
+                plt.close()
