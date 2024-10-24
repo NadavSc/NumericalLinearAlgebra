@@ -13,7 +13,7 @@ set_logger(log_path=os.path.join('../logger', 'log.txt'))
 
 def construct_A(lambda_, theta, delta, W, D):
     k = 2 * np.pi/lambda_
-    N = int(W/delta)
+    N = int(W/delta) + 1
 
     r_t = np.zeros((N, 2))
     r_r = np.zeros((N, 2))
@@ -49,17 +49,17 @@ def compute_SVD(A):
 
 def low_rank_approximation(A, tau):
     U, s, Vh = np.linalg.svd(A)
-    k = np.sum(s > tau) - 1
+    k = np.sum(s > tau)
     A_lr = U[:, :k] @ np.diag(s[:k]) @ Vh[:k, :]
-    return A_lr, k+1, s[:k]
+    return A_lr, k, s
 
 
 def compute_error(A, A_lr):
     return np.linalg.norm(A - A_lr) #/ np.linalg.norm(A)
 
 
-def theoretical_error(lr_s_values):
-    return np.sqrt(np.sum(lr_s_values**2))
+def theoretical_error(s_values, rank):
+    return np.sqrt(np.sum(s_values[rank:]**2))
 
 
 if __name__ == '__main__':
@@ -82,14 +82,14 @@ if __name__ == '__main__':
     times = []
 
     for tau in tau_values:
-        A_lr, rank, lr_s_values = low_rank_approximation(A, tau)
+        A_lr, rank, s_values = low_rank_approximation(A, tau)
 
         calc_time = np.mean(timeit.repeat(lambda: low_rank_approximation(A, tau), repeat=15, number=1))
         ranks.append(rank)
         errors.append(compute_error(A, A_lr))
-        theoretical_errors.append(theoretical_error(lr_s_values))
+        theoretical_errors.append(theoretical_error(s_values, rank))
         times.append(calc_time)
-        info(f'LR τ={tau} approximation has been calculated')
+        info(f'LR tau={tau} approximation has been calculated')
 
     plt.semilogx(tau_values, ranks, 'o')
     plt.xlabel('τ')
@@ -100,11 +100,12 @@ if __name__ == '__main__':
     plt.show()
     plt.close()
 
-    plt.loglog(tau_values, errors, 'o')
-    plt.axhline(y=theoretical_errors[0], color='k', linestyle='--')
+    plt.loglog(tau_values, errors, 'o', label='Error')
+    plt.loglog(tau_values, theoretical_errors, 'o', label='Theoretical error')
     plt.xlabel('τ')
     plt.ylabel('Relative Error (2-norm)')
     plt.title('Relative Error of LR Approximation')
+    plt.legend()
     plt.grid(True, which="both", ls="-", alpha=0.5)
     plt.savefig('lr_approx_error.png', dpi=300, bbox_inches='tight', pad_inches=0)
     plt.show()
