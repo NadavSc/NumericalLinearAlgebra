@@ -6,10 +6,10 @@ import matplotlib
 import random
 
 from time import time
-from logger import set_logger, info
+#from logger import set_logger, info
 matplotlib.use('TkAgg')
 
-set_logger(log_path=os.path.join('../logger', 'log.txt'))
+#set_logger(log_path=os.path.join('../logger', 'log.txt'))
 
 
 def construct_A(lambda_, theta, delta, W, D):
@@ -52,7 +52,10 @@ def low_rank_approximation(A, tau):
     U, s, Vh = np.linalg.svd(A)
     k = np.sum(s > tau)
     A_lr = U[:, :k] @ np.diag(s[:k]) @ Vh[:k, :]
-    return A_lr, k, s
+    U[:,k:] = 0
+    s[k:] = 0
+    Vh[k:,:] = 0
+    return A_lr,U,s,Vh,k
 
 
 def compute_error(A, A_lr):
@@ -67,32 +70,33 @@ if __name__ == '__main__':
 
     section = 3
 
+    lambda_ = 1
+    W = 128 * lambda_
+    theta = 0
+    delta = lambda_ / 10
+    D = W
+    N = int(W / delta) + 1
+
+    # Construct matrix A
+    A = construct_A(lambda_, theta, delta, W, D)
+    U, s, Vh = np.linalg.svd(A)
+
+    # Compute low-rank approximations
+    tau_values = np.logspace(-10, -1, num=10)
+
     if section == 1:
-        lambda_ = 1
-        W = 128 * lambda_
-        theta = 0
-        delta = lambda_ / 10
-        D = W
-        N = int(W/delta)
-
-        # Construct matrix A
-        A = construct_A(lambda_, theta, delta, W, D)
-
-        # Compute low-rank approximations
-        tau_values = np.logspace(-10, -1, num=10)
-
         ranks = []
         errors = []
         theoretical_errors = []
         times = []
 
         for tau in tau_values:
-            A_lr, rank, s_values = low_rank_approximation(A, tau)
+            A_lr,U_lr,s_lr,Vh_lr,rank = low_rank_approximation(A, tau)
 
-            calc_time = np.mean(timeit.repeat(lambda: low_rank_approximation(A, tau), repeat=15, number=1))
+            calc_time = np.mean(timeit.repeat(lambda: compute_error(A, A_lr), repeat=15, number=1))
             ranks.append(rank)
             errors.append(compute_error(A, A_lr))
-            theoretical_errors.append(theoretical_error(s_values, rank))
+            theoretical_errors.append(theoretical_error(s_lr, rank))
             times.append(calc_time)
             info(f'LR tau={tau} approximation has been calculated')
 
@@ -132,89 +136,135 @@ if __name__ == '__main__':
 
 
     # Section f first algo
-    if section ==2:
-        lambda_ = 1
-        W = 128 * lambda_
-        theta = 0
-        delta = lambda_ / 10
-        D = W
-        N = int(W / delta)
-        l = 1
-        n = [5]
-        tau_ep = 1e-2
-        el = [1]
-        eps_l = []
-        #TODO: Replace tau with array like in (e)
-        tau = 1e-1
+    if section == 2:
+        tau_ep = 1e-1
 
-        # Construct matrix A
-        A = construct_A(lambda_, theta, delta, W, D)
-        A_lr, rank, lr_s_values = low_rank_approximation(A, tau)
+        eps = []
+        times_f_1 = []
+        err_time_calc = []
+        req_n = []
 
-        while tau_ep<el[-1]:
-            i_rows = np.array(random.sample(range(N), n[-1]))
-            i_cols = np.array(random.sample(range(N), n[-1]))
+        for tau in tau_values:
+            el = [1]
+            eps_l = []
+            n = [5]
+            l = 1
+            calc_time = 0
+            A_lr,U_lr,s_lr,Vh_lr,rank = low_rank_approximation(A, tau)
 
-            A_l = A[i_rows[:, np.newaxis], i_cols]
+            while (tau_ep<el[-1]) and (n[-1] < N):
+                i_rows = np.array(random.sample(range(N), n[-1]))
+                i_cols = np.array(random.sample(range(N), n[-1]))
 
-            #U, s, Vh = np.linalg.svd(A)
-            #Vh_new = np.matmul(np.diag(s),Vh)
-            #A_l_sub = np.matmul(U[i_rows, :],np.transpose(Vh_new[i_cols, :]))
+                A_l = A[i_rows[:, np.newaxis], i_cols]
+                A_lr_sub = A_lr[i_rows[:, np.newaxis], i_cols]
 
-            A_lr_sub = A_lr[i_rows[:, np.newaxis], i_cols]
+                compute_err = compute_error(A_l, A_lr_sub)
+                calc_time += np.mean(timeit.repeat(lambda: compute_error(A_l, A_lr_sub), repeat=15, number=1))
+                eps_l.append(compute_err)
+                if l>1:
+                    el.append(np.abs((eps_l[-1] - eps_l[-2])/eps_l[-1]))
+                l = l+1
+                n.append(2*n[-1])
+            req_n.append(n[-1])
+            err_time_calc.append(calc_time)
+            eps.append(eps_l[-1])
 
-            eps_l.append(np.linalg.norm(A_l - A_lr_sub) / np.linalg.norm(A_l))
-            if l>1:
-                el.append(np.abs((eps_l[-1] - eps_l[-2])/eps_l[-1]))
-            l = l+1
-            n.append(2*n[-1])
+        #plt.loglog(n[1:-1], el[1:], 'o')
+        #plt.xlabel('n')
+        #plt.ylabel('el')
+        #plt.title('el vs n')
+        #plt.grid(True, which="both", ls="-", alpha=0.5)
+        #plt.show()
+        #plt.close()
 
-        plt.loglog(n[1:-1], el[1:], 'o')
-        plt.xlabel('n')
-        plt.ylabel('el')
-        plt.title('el vs n')
+        plt.loglog(tau_values, eps, 'o')
+        plt.xlabel('tau')
+        plt.ylabel('epsilon_l')
+        plt.title('tau vs epsilon_l')
         plt.grid(True, which="both", ls="-", alpha=0.5)
         plt.show()
         plt.close()
 
+        plt.loglog(tau_values, err_time_calc, 'o')
+        plt.xlabel('tau')
+        plt.ylabel('err_time_calc')
+        plt.title('tau vs err_time_calc')
+        plt.grid(True, which="both", ls="-", alpha=0.5)
+        plt.show()
+        plt.close()
+
+        plt.loglog(tau_values, req_n, 'o')
+        plt.xlabel('tau')
+        plt.ylabel('req_n')
+        plt.title('tau vs req_n')
+        plt.grid(True, which="both", ls="-", alpha=0.5)
+        plt.show()
+        plt.close()
+
+
+
     # Section f second algo
     if section == 3:
-        lambda_ = 1
-        W = 128 * lambda_
-        theta = 0
-        delta = lambda_ / 10
-        D = W
-        N = int(W / delta)
-        l = 1
-        n = [5]
         tau_ep = 1e-1
-        el = [1]
-        eps_l = []
+
+        eps = []
+        times_f_1 = []
+        err_time_calc = []
+        req_n = []
+
 
         # Construct matrix A
-        A = construct_A(lambda_, theta, delta, W, D)
+        for tau in tau_values:
+            el = [1]
+            eps_l = []
+            n = [5]
+            l = 1
+            calc_time = 0
 
-        while tau_ep<el[-1]:
-            i_rows = np.array(random.sample(range(N), n[-1]))
-            i_cols = np.array(random.sample(range(N), n[-1]))
+            A_lr,U_lr,s_lr,Vh_lr,rank = low_rank_approximation(A, tau)
 
-            a_l = A[i_rows, i_cols]
+            Vh_new = np.matmul(np.diag(s_lr), Vh_lr)
 
-            U, s, Vh = np.linalg.svd(A)
-            Vh_new = np.matmul(np.diag(s),Vh)
+            while (tau_ep<el[-1]) and (n[-1] < N):
+                i_rows = random.sample(range(N), n[-1])
+                i_cols = random.sample(range(N), n[-1])
 
-            a_l_sub = np.matmul(U[i_rows, :],np.transpose(Vh_new[i_cols, :]))
+                a_l = np.array([A[i_rows[j], i_cols[j]] for j in range(n[-1])])
+                a_l_sub = np.array([np.dot(U_lr[i_rows[j], :], Vh_new[:, i_cols[j]]) for j in range(n[-1])])
 
-            eps_l.append(np.linalg.norm(a_l - a_l_sub) / np.linalg.norm(a_l))
-            if l>1:
-                el.append(np.abs((eps_l[-1] - eps_l[-2])/eps_l[-1]))
-            l = l+1
-            n.append(2*n[-1])
+                compute_err = compute_error(a_l, a_l_sub)
+                calc_time += np.mean(timeit.repeat(lambda: compute_error(a_l, a_l_sub), repeat=15, number=1))
+                eps_l.append(compute_err)
 
-        plt.loglog(n[1:-1], el[1:], 'o')
-        plt.xlabel('n')
-        plt.ylabel('el')
-        plt.title('el vs n')
+                if l>1:
+                    el.append(np.abs((eps_l[-1] - eps_l[-2])/eps_l[-1]))
+                l = l+1
+                n.append(2 * n[-1])
+            req_n.append(n[-1])
+            err_time_calc.append(calc_time)
+            eps.append(eps_l[-1])
+
+        plt.loglog(tau_values, eps, 'o')
+        plt.xlabel('tau')
+        plt.ylabel('epsilon_l')
+        plt.title('tau vs epsilon_l')
+        plt.grid(True, which="both", ls="-", alpha=0.5)
+        plt.show()
+        plt.close()
+
+        plt.loglog(tau_values, err_time_calc, 'o')
+        plt.xlabel('tau')
+        plt.ylabel('err_time_calc')
+        plt.title('tau vs err_time_calc')
+        plt.grid(True, which="both", ls="-", alpha=0.5)
+        plt.show()
+        plt.close()
+
+        plt.loglog(tau_values, req_n, 'o')
+        plt.xlabel('tau')
+        plt.ylabel('req_n')
+        plt.title('tau vs req_n')
         plt.grid(True, which="both", ls="-", alpha=0.5)
         plt.show()
         plt.close()
