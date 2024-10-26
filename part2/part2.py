@@ -50,17 +50,18 @@ def compute_SVD(A):
 
 def low_rank_approximation(A, tau):
     U, s, Vh = np.linalg.svd(A)
-    k = np.sum(s > tau)
+    k = np.sum(s > s[0]*tau)
     A_lr = U[:, :k] @ np.diag(s[:k]) @ Vh[:k, :]
     return A_lr, k, s
 
 
 def compute_error(A, A_lr):
-    return np.linalg.norm(A - A_lr) #/ np.linalg.norm(A)
+    return np.linalg.norm(A - A_lr) / np.linalg.norm(A)
 
 
 def theoretical_error(s_values, rank):
-    return np.sqrt(np.sum(s_values[rank:]**2))
+    #return np.sqrt(np.sum(s_values[rank+1:]**2))
+    return s_values[rank]/s_values[0]
 
 
 def error_estimation_submatrix(A: np.ndarray, U: np.ndarray, V: np.ndarray,
@@ -136,7 +137,7 @@ def fast_relative_error_estimation():
     def low_rank_approx(A: np.ndarray, tau: float) -> Tuple[np.ndarray, np.ndarray]:
         """Compute low-rank approximation using SVD."""
         U, s, Vh = np.linalg.svd(A)
-        rank = np.sum(s >= tau)
+        rank = np.sum(s >= s[0]*tau)
         return U[:, :rank], (s[:rank, None] * Vh[:rank, :])
     # Parameters
     W = 128  # W = 128λ
@@ -155,16 +156,20 @@ def fast_relative_error_estimation():
 
     for tau in tau_values:
         # Exact computation
-        start_time = time()
         U, V = low_rank_approx(A, tau)
         A_approx = U @ V
+        # Measuring error calc. time:
+        start_time = time()
         exact_error = np.linalg.norm(A - A_approx) / np.linalg.norm(A)
         exact_time = time() - start_time
         results_exact.append((exact_error, U.shape[1], exact_time))
 
         # Estimation methods
-        eps_sub, n_sub, time_sub = error_estimation_submatrix(A, U, V)
-        eps_diag, n_diag, time_diag = error_estimation_diagonal(A, U, V)
+        eps_sub, n_sub, _ = error_estimation_submatrix(A, U, V)
+        eps_diag, n_diag, _ = error_estimation_diagonal(A, U, V)
+
+        time_sub = np.mean(timeit.repeat(lambda: error_estimation_submatrix(A, U, V), repeat=100, number=1))
+        time_diag = np.mean(timeit.repeat(lambda: error_estimation_diagonal(A, U, V), repeat=100, number=1))
 
         results_submatrix.append((eps_sub, n_sub, time_sub))
         results_diagonal.append((eps_diag, n_diag, time_diag))
@@ -180,7 +185,7 @@ if __name__ == '__main__':
     D = W
     N = int(W/delta)
 
-    section = 'f'
+    section = 'e'
 
     if section == 'e':
         # Construct matrix A
@@ -197,12 +202,35 @@ if __name__ == '__main__':
         for tau in tau_values:
             A_lr, rank, s_values = low_rank_approximation(A, tau)
 
-            calc_time = np.mean(timeit.repeat(lambda: low_rank_approximation(A, tau), repeat=15, number=1))
+            calc_time = np.mean(timeit.repeat(lambda: compute_error(A, A_lr), repeat=100, number=1))
             ranks.append(rank)
             errors.append(compute_error(A, A_lr))
             theoretical_errors.append(theoretical_error(s_values, rank))
             times.append(calc_time)
             info(f'LR tau={tau} approximation has been calculated')
+
+        plt.imshow(np.abs(A))
+        x_ticks = np.arange(0, len(A) + 1, 100)[1:] - 1
+        y_ticks = np.arange(0, len(A) + 1, 100)[1:] - 1
+        #plt.grid()
+        plt.xticks(x_ticks, labels=x_ticks + 1)
+        plt.yticks(y_ticks, labels=y_ticks + 1)
+        plt.colorbar()
+        plt.title('Absolute Values of Matrix A')
+        plt.xlabel('Transmitter Index')
+        plt.ylabel('Receiver Index')
+        plt.savefig(r'ex1_a_constructA.png', dpi=300, bbox_inches='tight', pad_inches=0)
+        plt.show()
+
+        U, s, Vh = np.linalg.svd(A)
+        plt.semilogy(np.arange(len(s)), s, 'o')
+        plt.xlabel('Transmitter Index')
+        plt.ylabel('Singular Values')
+        plt.title('Singular Values of A')
+        plt.grid(True, which="both", ls="-", alpha=0.5)
+        plt.savefig('s_vals.png', dpi=300, bbox_inches='tight', pad_inches=0)
+        plt.show()
+        plt.close()
 
         plt.semilogx(tau_values, ranks, 'o')
         plt.xlabel('τ')
@@ -214,7 +242,7 @@ if __name__ == '__main__':
         plt.close()
 
         plt.loglog(tau_values, errors, 'o', label='Error')
-        plt.loglog(tau_values, theoretical_errors, 'o', label='Theoretical error')
+        plt.loglog(tau_values, theoretical_errors, 'x', label='Theoretical error')
         plt.xlabel('τ')
         plt.ylabel('Relative Error (2-norm)')
         plt.title('Relative Error of LR Approximation')
@@ -227,16 +255,18 @@ if __name__ == '__main__':
         plt.semilogx(tau_values, times, 'o')
         plt.xlabel('τ')
         plt.ylabel('Computation Time (s)')
-        plt.title('Computation Time for LR Approximation')
+        plt.title('Computation Time for Relative Error Calc.')
         plt.grid(True, which="both", ls="-", alpha=0.5)
-        plt.savefig('lr_approx_complexity.png', dpi=300, bbox_inches='tight', pad_inches=0)
+        plt.savefig('err_complexity.png', dpi=300, bbox_inches='tight', pad_inches=0)
         plt.show()
         plt.close()
 
         print(f"τ values: {tau_values}")
         print(f"Ranks: {ranks}")
         print(f"Errors: {errors}")
+        print(f"Theoretical Errors: {theoretical_errors}")
         print(f"Times: {times}")
+        print(f"First singular values: {s[:10]}")
 
     if section == 'f':
         # Run analysis and plot results
@@ -297,3 +327,7 @@ if __name__ == '__main__':
         plt.grid(True, which="both", ls="-", alpha=0.5)
         plt.savefig('part2_f_complexity.png', dpi=300, bbox_inches='tight', pad_inches=0)
         plt.show()
+
+        print(f"Times times_exact: {times_exact}")
+        print(f"Times times_sub: {times_sub}")
+        print(f"Times times_diag: {times_diag}")
