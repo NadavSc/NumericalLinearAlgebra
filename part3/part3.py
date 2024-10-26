@@ -173,8 +173,8 @@ def run_analysis(N=128, lambda_=1, W=128, theta=0, D=128, B0=5):
 
         # Compute actual relative error
         A_fast_lr = U2 @ B1
-        lr_error = np.linalg.norm(A - A_lr)
-        fast_lr_error = np.linalg.norm(A - A_fast_lr)
+        lr_error = np.linalg.norm(A - A_lr) / np.linalg.norm(A)
+        fast_lr_error = np.linalg.norm(A - A_fast_lr) / np.linalg.norm(A)
 
         computation_time_lr.append(comp_time_lr)
         computation_time_fast_lr.append(comp_time_fast_lr)
@@ -187,7 +187,7 @@ def run_analysis(N=128, lambda_=1, W=128, theta=0, D=128, B0=5):
 
 
 if __name__ == '__main__':
-    section = 'j'
+    section = 'i'
 
     if section == 'i':
         tau_values, computation_time_lr, computation_time_fast_lr, lr_errors, fast_lr_errors, ranks_lr, ranks_fast_lr = run_analysis()

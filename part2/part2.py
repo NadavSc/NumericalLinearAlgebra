@@ -41,11 +41,11 @@ def low_rank_approximation(A, tau):
 
 
 def compute_error(A, A_lr):
-    return np.linalg.norm(A - A_lr) #/ np.linalg.norm(A)
+    return np.linalg.norm(A - A_lr) / np.linalg.norm(A)
 
 
 def theoretical_error(s_values, rank):
-    return np.sqrt(np.sum(s_values[rank:]**2))
+    return s_values[rank] / np.linalg.norm(A)
 
 
 def error_estimation_submatrix(A: np.ndarray, U: np.ndarray, V: np.ndarray,
@@ -165,7 +165,7 @@ if __name__ == '__main__':
     D = W
     N = int(W/delta)
 
-    section = 'f'
+    section = 'e'
 
     if section == 'e':
         # Construct matrix A
@@ -182,7 +182,7 @@ if __name__ == '__main__':
         for tau in tau_values:
             A_lr, rank, s_values = low_rank_approximation(A, tau)
 
-            calc_time = np.mean(timeit.repeat(lambda: low_rank_approximation(A, tau), repeat=15, number=1))
+            calc_time = np.mean(timeit.repeat(lambda: low_rank_approximation(A, tau), repeat=5, number=1))
             ranks.append(rank)
             errors.append(compute_error(A, A_lr))
             theoretical_errors.append(theoretical_error(s_values, rank))
@@ -194,18 +194,18 @@ if __name__ == '__main__':
         plt.ylabel('Rank')
         plt.title('Rank of LR Approximation')
         plt.grid(True, which="both", ls="-", alpha=0.5)
-        plt.savefig('lr_approx_ranks.png', dpi=300, bbox_inches='tight', pad_inches=0)
+        plt.savefig('part2_e_lr_approx_ranks.png', dpi=300, bbox_inches='tight', pad_inches=0)
         plt.show()
         plt.close()
 
         plt.loglog(tau_values, errors, 'o', label='Error')
-        plt.loglog(tau_values, theoretical_errors, 'o', label='Theoretical error')
+        plt.loglog(tau_values, theoretical_errors, 'x', label='Theoretical error')
         plt.xlabel('τ')
         plt.ylabel('Relative Error (2-norm)')
         plt.title('Relative Error of LR Approximation')
         plt.legend()
         plt.grid(True, which="both", ls="-", alpha=0.5)
-        plt.savefig('lr_approx_error.png', dpi=300, bbox_inches='tight', pad_inches=0)
+        plt.savefig('part2_e_lr_approx_error.png', dpi=300, bbox_inches='tight', pad_inches=0)
         plt.show()
         plt.close()
 
@@ -214,7 +214,7 @@ if __name__ == '__main__':
         plt.ylabel('Computation Time (s)')
         plt.title('Computation Time for LR Approximation')
         plt.grid(True, which="both", ls="-", alpha=0.5)
-        plt.savefig('lr_approx_complexity.png', dpi=300, bbox_inches='tight', pad_inches=0)
+        plt.savefig('part2_e_lr_approx_complexity.png', dpi=300, bbox_inches='tight', pad_inches=0)
         plt.show()
         plt.close()
 
