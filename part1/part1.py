@@ -34,7 +34,7 @@ def construct_A(lambda_, theta, delta, W, D):
 
 
 def compute_rank(s_values, threshold):
-    return np.sum(s_values > threshold)
+    return np.sum(s_values > threshold*s_values[0])
 
 
 def compute_SVD(A):
