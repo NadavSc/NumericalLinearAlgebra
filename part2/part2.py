@@ -50,7 +50,7 @@ def compute_SVD(A):
 
 def low_rank_approximation(A, tau):
     U, s, Vh = np.linalg.svd(A)
-    k = np.sum(s > tau)
+    k = np.sum(s > tau*s[0])
     A_lr = U[:, :k] @ np.diag(s[:k]) @ Vh[:k, :]
     U[:,k:] = 0
     s[k:] = 0
@@ -68,7 +68,7 @@ def theoretical_error(s_values, rank):
 
 if __name__ == '__main__':
 
-    section = 3
+    section = 2
 
     lambda_ = 1
     W = 128 * lambda_
@@ -79,6 +79,19 @@ if __name__ == '__main__':
 
     # Construct matrix A
     A = construct_A(lambda_, theta, delta, W, D)
+
+    plt.imshow(np.abs(A))
+    x_ticks = np.arange(0, len(A) + 1, 200)[1:] - 1
+    y_ticks = np.arange(0, len(A) + 1, 200)[1:] - 1
+    plt.xticks(x_ticks, labels=x_ticks + 1)
+    plt.yticks(y_ticks, labels=y_ticks + 1)
+    plt.colorbar()
+    plt.title('Absolute Values of Matrix A')
+    plt.xlabel('Transmitter Index')
+    plt.ylabel('Receiver Index')
+    plt.savefig(r'ex2_a_constructA.png', dpi=300, bbox_inches='tight', pad_inches=0)
+    plt.show()
+
     U, s, Vh = np.linalg.svd(A)
 
     # Compute low-rank approximations
@@ -98,7 +111,7 @@ if __name__ == '__main__':
             errors.append(compute_error(A, A_lr))
             theoretical_errors.append(theoretical_error(s_lr, rank))
             times.append(calc_time)
-            info(f'LR tau={tau} approximation has been calculated')
+            #info(f'LR tau={tau} approximation has been calculated')
 
         plt.semilogx(tau_values, ranks, 'o')
         plt.xlabel('τ')
