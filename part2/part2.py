@@ -33,24 +33,9 @@ def construct_A(lambda_, theta, delta, W, D):
     return A
 
 
-def compute_rank(s_values, threshold):
-    return np.sum(s_values > threshold)
-
-
-def compute_SVD(A):
-    start_time = time()
-    _, s_values, _ = np.linalg.svd(A)
-    svd_time = time() - start_time
-
-    ranks = [compute_rank(s_values, tau) for tau in [1e-2, 1e-5, 1e-8]]
-    condition_numbers = s_values[0] / s_values[np.array(ranks)-1]
-
-    return s_values, svd_time, ranks, condition_numbers
-
-
 def low_rank_approximation(A, tau):
     U, s, Vh = np.linalg.svd(A)
-    k = np.sum(s > tau)
+    k = np.sum(s > tau * s[0])
     A_lr = U[:, :k] @ np.diag(s[:k]) @ Vh[:k, :]
     return A_lr, k, s
 
