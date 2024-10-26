@@ -75,10 +75,14 @@ def plot_fit_rank(threshold, save=False, log=False):
     plt.grid(True, which="both", ls="-", alpha=0.5)
     if save:
         plt.savefig(f'part1_b_rank_{threshold[2:]}.png', dpi=300, bbox_inches='tight', pad_inches=0)
+    if show:
+        plt.show()
+    plt.close()
 
 
 if __name__ == '__main__':
-    sections = ['b']  # Possible sections: 'a', 'b', 'c', 'd'
+    sections = ['a', 'b']  # Possible sections: 'a', 'b'
+    show = False
     save = True
     for section in sections:
         if section == 'a':
@@ -97,28 +101,32 @@ if __name__ == '__main__':
 
             # Plot Matrix A
             plt.imshow(np.abs(A))
-            x_ticks = np.arange(0, len(A)+1, 5)[1:]-1
-            y_ticks = np.arange(0, len(A)+1, 5)[1:]-1
-            plt.xticks(x_ticks, labels=x_ticks+1)
-            plt.yticks(y_ticks, labels=y_ticks+1)
+            x_ticks = np.arange(0, len(A)+1, 5)[1:]
+            y_ticks = np.arange(0, len(A)+1, 5)[1:]
+            plt.xticks(x_ticks-1, labels=x_ticks)
+            plt.yticks(y_ticks-1, labels=y_ticks)
             plt.colorbar()
             plt.title('Absolute Values of Matrix A')
             plt.xlabel('Transmitter Index')
             plt.ylabel('Receiver Index')
-            plt.savefig(r'ex1_a_constructA.png', dpi=300, bbox_inches='tight', pad_inches=0)
-            plt.show()
+            plt.savefig(r'part1_a_constructA.png', dpi=300, bbox_inches='tight', pad_inches=0)
+            if show:
+                plt.show()
+            plt.close()
 
             # Plot Matrix A Singular Values
             s_values, _, _, _ = compute_SVD(A)
             info('Section A: SVD has been calculated')
-            plt.scatter(np.arange(len(s_values)), s_values)
+            plt.scatter(np.arange(len(s_values)) + 1, s_values)
             plt.yscale('log')  # Set y-axis to log scale
             plt.grid(True, which='both', linestyle='--', linewidth=0.5)  # Add grid
             plt.title('Singular Values of Matrix A')
             plt.xlabel('Transmitter Index')
             plt.ylabel('Singular Values')
-            plt.savefig(r'ex1_a_svdA_log.png', dpi=300, bbox_inches='tight', pad_inches=0)
-            plt.show()
+            plt.savefig(r'part1_a_svdA_log.png', dpi=300, bbox_inches='tight', pad_inches=0)
+            if show:
+                plt.show()
+            plt.close()
 
         ## TODO: add proper asymptotic lines to figures
         if section == 'b':
@@ -175,7 +183,8 @@ if __name__ == '__main__':
             plt.grid(True, which="both", ls="-", alpha=0.5)
             if save:
                 plt.savefig('part1_b_svd_complexity.png', dpi=300, bbox_inches='tight', pad_inches=0)
-            plt.show()
+            if show:
+                plt.show()
             plt.close()
 
             for case, data in results.items():
@@ -190,7 +199,8 @@ if __name__ == '__main__':
             plt.grid(True, which="both", ls="-", alpha=0.5)
             if save:
                 plt.savefig('part1_b_rank_log.png', dpi=300, bbox_inches='tight', pad_inches=0)
-            plt.show()
+            if show:
+                plt.show()
             plt.close()
 
             plot_fit_rank(threshold='τ=1e-2', save=save, log=True)
@@ -212,5 +222,6 @@ if __name__ == '__main__':
                 plt.subplots_adjust(left=0.3)
             if save:
                 plt.savefig(f'part1_b_condition_all_log.png', dpi=300, bbox_inches='tight', pad_inches=0)
-            plt.show()
+            if show:
+                plt.show()
             plt.close()

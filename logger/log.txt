@@ -192,3 +192,81 @@
 [2024-10-26 14:18:47,177 INFO] LR tau=0.001 approximation has been calculated
 [2024-10-26 14:18:59,019 INFO] LR tau=0.01 approximation has been calculated
 [2024-10-26 14:19:13,684 INFO] LR tau=0.1 approximation has been calculated
+[2024-10-26 20:18:38,927 INFO] Section A: A has been constructed
+[2024-10-26 20:18:57,464 INFO] Section A: SVD has been calculated
+[2024-10-26 20:19:08,391 INFO] results_b.pkl has been loaded
+[2024-10-26 20:20:29,231 INFO] Section A: A has been constructed
+[2024-10-26 20:20:48,952 INFO] Section A: SVD has been calculated
+[2024-10-26 20:20:50,360 INFO] results_b.pkl has been loaded
+[2024-10-26 20:21:24,197 INFO] Section A: A has been constructed
+[2024-10-26 20:21:26,776 INFO] Section A: SVD has been calculated
+[2024-10-26 20:22:30,822 INFO] Section A: A has been constructed
+[2024-10-26 20:22:49,536 INFO] Section A: SVD has been calculated
+[2024-10-26 20:28:53,511 INFO] Section A: A has been constructed
+[2024-10-26 20:28:58,369 INFO] Section A: SVD has been calculated
+[2024-10-26 20:28:59,744 INFO] Section B: A with D = 4lambda, W=4, N=41 has been constructed
+[2024-10-26 20:28:59,745 INFO] Section B: SVD has been calculated
+[2024-10-26 20:28:59,816 INFO] Section B: A with D = 4lambda, W=8, N=81 has been constructed
+[2024-10-26 20:28:59,820 INFO] Section B: SVD has been calculated
+[2024-10-26 20:29:00,122 INFO] Section B: A with D = 4lambda, W=16, N=161 has been constructed
+[2024-10-26 20:29:00,131 INFO] Section B: SVD has been calculated
+[2024-10-26 20:29:01,267 INFO] Section B: A with D = 4lambda, W=32, N=321 has been constructed
+[2024-10-26 20:29:01,287 INFO] Section B: SVD has been calculated
+[2024-10-26 20:29:05,811 INFO] Section B: A with D = 4lambda, W=64, N=641 has been constructed
+[2024-10-26 20:29:05,912 INFO] Section B: SVD has been calculated
+[2024-10-26 20:31:26,129 INFO] Section A: A has been constructed
+[2024-10-26 20:31:26,865 INFO] Section A: SVD has been calculated
+[2024-10-26 20:31:27,666 INFO] Section B: A with D = 4lambda, W=4, N=41 has been constructed
+[2024-10-26 20:31:27,667 INFO] Section B: SVD has been calculated
+[2024-10-26 20:31:27,703 INFO] Section B: A with D = 4lambda, W=8, N=81 has been constructed
+[2024-10-26 20:31:27,705 INFO] Section B: SVD has been calculated
+[2024-10-26 20:31:27,860 INFO] Section B: A with D = 4lambda, W=16, N=161 has been constructed
+[2024-10-26 20:31:27,874 INFO] Section B: SVD has been calculated
+[2024-10-26 20:31:28,453 INFO] Section B: A with D = 4lambda, W=32, N=321 has been constructed
+[2024-10-26 20:31:28,484 INFO] Section B: SVD has been calculated
+[2024-10-26 20:31:30,698 INFO] Section B: A with D = 4lambda, W=64, N=641 has been constructed
+[2024-10-26 20:31:30,798 INFO] Section B: SVD has been calculated
+[2024-10-26 20:31:39,647 INFO] Section B: A with D = 4lambda, W=128, N=1281 has been constructed
+[2024-10-26 20:31:41,832 INFO] Section B: SVD has been calculated
+[2024-10-26 20:32:18,265 INFO] Section B: A with D = 4lambda, W=256, N=2561 has been constructed
+[2024-10-26 20:32:35,114 INFO] Section B: SVD has been calculated
+[2024-10-26 20:34:54,569 INFO] Section B: A with D = 4lambda, W=512, N=5121 has been constructed
+[2024-10-26 20:37:04,486 INFO] Section B: SVD has been calculated
+[2024-10-26 20:46:21,452 INFO] Section B: A with D = 4lambda, W=1024, N=10241 has been constructed
+[2024-10-26 21:03:43,699 INFO] Section B: SVD has been calculated
+[2024-10-26 21:03:44,106 INFO] Section B: A with D = W, W=4, N=41 has been constructed
+[2024-10-26 21:03:44,172 INFO] Section B: SVD has been calculated
+[2024-10-26 21:03:44,211 INFO] Section B: A with D = W, W=8, N=81 has been constructed
+[2024-10-26 21:03:44,252 INFO] Section B: SVD has been calculated
+[2024-10-26 21:03:44,406 INFO] Section B: A with D = W, W=16, N=161 has been constructed
+[2024-10-26 21:03:44,448 INFO] Section B: SVD has been calculated
+[2024-10-26 21:03:45,030 INFO] Section B: A with D = W, W=32, N=321 has been constructed
+[2024-10-26 21:03:45,061 INFO] Section B: SVD has been calculated
+[2024-10-26 21:03:47,367 INFO] Section B: A with D = W, W=64, N=641 has been constructed
+[2024-10-26 21:03:47,499 INFO] Section B: SVD has been calculated
+[2024-10-26 21:03:56,685 INFO] Section B: A with D = W, W=128, N=1281 has been constructed
+[2024-10-26 21:03:58,636 INFO] Section B: SVD has been calculated
+[2024-10-26 21:04:34,118 INFO] Section B: A with D = W, W=256, N=2561 has been constructed
+[2024-10-26 21:04:51,008 INFO] Section B: SVD has been calculated
+[2024-10-26 21:07:14,187 INFO] Section B: A with D = W, W=512, N=5121 has been constructed
+[2024-10-26 21:09:22,716 INFO] Section B: SVD has been calculated
+[2024-10-26 21:18:48,535 INFO] Section B: A with D = W, W=1024, N=10241 has been constructed
+[2024-10-26 21:35:26,109 INFO] Section B: SVD has been calculated
+[2024-10-26 21:35:26,212 INFO] Section B: A with D = W²/lambda, W=4, N=41 has been constructed
+[2024-10-26 21:35:26,264 INFO] Section B: SVD has been calculated
+[2024-10-26 21:35:26,305 INFO] Section B: A with D = W²/lambda, W=8, N=81 has been constructed
+[2024-10-26 21:35:26,321 INFO] Section B: SVD has been calculated
+[2024-10-26 21:35:26,470 INFO] Section B: A with D = W²/lambda, W=16, N=161 has been constructed
+[2024-10-26 21:35:26,490 INFO] Section B: SVD has been calculated
+[2024-10-26 21:35:27,056 INFO] Section B: A with D = W²/lambda, W=32, N=321 has been constructed
+[2024-10-26 21:35:27,086 INFO] Section B: SVD has been calculated
+[2024-10-26 21:35:29,333 INFO] Section B: A with D = W²/lambda, W=64, N=641 has been constructed
+[2024-10-26 21:35:29,427 INFO] Section B: SVD has been calculated
+[2024-10-26 21:35:38,207 INFO] Section B: A with D = W²/lambda, W=128, N=1281 has been constructed
+[2024-10-26 21:35:40,043 INFO] Section B: SVD has been calculated
+[2024-10-26 21:36:15,338 INFO] Section B: A with D = W²/lambda, W=256, N=2561 has been constructed
+[2024-10-26 21:36:31,957 INFO] Section B: SVD has been calculated
+[2024-10-26 21:38:52,384 INFO] Section B: A with D = W²/lambda, W=512, N=5121 has been constructed
+[2024-10-26 21:41:01,929 INFO] Section B: SVD has been calculated
+[2024-10-26 21:50:25,336 INFO] Section B: A with D = W²/lambda, W=1024, N=10241 has been constructed
+[2024-10-26 22:07:13,051 INFO] Section B: SVD has been calculated
