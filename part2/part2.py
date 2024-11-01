@@ -153,6 +153,7 @@ def fast_relative_error_estimation():
     results_exact = []
     results_submatrix = []
     results_diagonal = []
+    toatl_n = []
 
     for tau in tau_values:
         # Exact computation
@@ -165,11 +166,21 @@ def fast_relative_error_estimation():
         results_exact.append((exact_error, U.shape[1], exact_time))
 
         # Estimation methods
-        eps_sub, n_sub, _ = error_estimation_submatrix(A, U, V)
-        eps_diag, n_diag, _ = error_estimation_diagonal(A, U, V)
+        eps_sub, _, _ = error_estimation_submatrix(A, U, V)
+        eps_diag, _, _ = error_estimation_diagonal(A, U, V)
 
-        time_sub = np.mean(timeit.repeat(lambda: error_estimation_submatrix(A, U, V), repeat=100, number=1))
-        time_diag = np.mean(timeit.repeat(lambda: error_estimation_diagonal(A, U, V), repeat=100, number=1))
+        time_sub = np.mean(timeit.repeat(lambda: error_estimation_submatrix(A, U, V), repeat=1000, number=1))
+        time_diag = np.mean(timeit.repeat(lambda: error_estimation_diagonal(A, U, V), repeat=1000, number=1))
+
+        n_sub_temp_toatal = []
+        n_diag_temp_toatal = []
+        for _ in range(1000):
+            _, n_sub_temp, _ = error_estimation_submatrix(A, U, V)
+            _, n_diag_temp, _ = error_estimation_diagonal(A, U, V)
+            n_sub_temp_toatal.append(n_sub_temp)
+            n_diag_temp_toatal.append(n_diag_temp)
+        n_sub= np.mean(n_sub_temp_toatal)
+        n_diag = np.mean(n_diag_temp_toatal)
 
         results_submatrix.append((eps_sub, n_sub, time_sub))
         results_diagonal.append((eps_diag, n_diag, time_diag))
