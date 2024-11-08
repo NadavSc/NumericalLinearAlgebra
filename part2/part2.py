@@ -82,7 +82,7 @@ def error_estimation_submatrix(A: np.ndarray, U: np.ndarray, V: np.ndarray,
             return eps_l, n // 2, time() - start_time
 
 
-def error_estimation_diagonal(A: np.ndarray, U: np.ndarray, V: np.ndarray,
+def error_estimation_vector(A: np.ndarray, U: np.ndarray, V: np.ndarray,
                               tau_eps: float = 0.1) -> Tuple[float, int, float]:
     """Implementation of algorithm (££)"""
     start_time = time()
@@ -96,7 +96,7 @@ def error_estimation_diagonal(A: np.ndarray, U: np.ndarray, V: np.ndarray,
         i_row = np.random.choice(N, size=n, replace=False)
         i_col = np.random.choice(N, size=n, replace=False)
 
-        # Extract diagonal elements
+        # Extract elements
         a_l = np.array([A[i_row[j], i_col[j]] for j in range(n)])
         a_l_approx = np.array([U[i_row[j], :] @ V[:, i_col[j]] for j in range(n)])
 
@@ -136,7 +136,7 @@ def fast_relative_error_estimation():
     # Results storage
     results_exact = []
     results_submatrix = []
-    results_diagonal = []
+    results_vector = []
 
     for tau in tau_values:
         # Exact computation
@@ -149,12 +149,12 @@ def fast_relative_error_estimation():
 
         # Estimation methods
         eps_sub, n_sub, time_sub = error_estimation_submatrix(A, U, V)
-        eps_diag, n_diag, time_diag = error_estimation_diagonal(A, U, V)
+        eps_diag, n_diag, time_diag = error_estimation_vector(A, U, V)
 
         results_submatrix.append((eps_sub, n_sub, time_sub))
-        results_diagonal.append((eps_diag, n_diag, time_diag))
+        results_vector.append((eps_diag, n_diag, time_diag))
 
-    return tau_values, results_exact, results_submatrix, results_diagonal
+    return tau_values, results_exact, results_submatrix, results_vector
 
 
 if __name__ == '__main__':
@@ -164,10 +164,10 @@ if __name__ == '__main__':
     delta = lambda_ / 10
     D = W
     N = int(W/delta)
-
-    section = 'e'
-
-    if section == 'e':
+    sections = ['f']  # Possible sections: 'e', 'f'
+    show = True
+    save = False
+    if 'e' in sections:
         # Construct matrix A
         A = construct_A(lambda_, theta, delta, W, D)
 
@@ -192,30 +192,33 @@ if __name__ == '__main__':
         plt.semilogx(tau_values, ranks, 'o')
         plt.xlabel('τ')
         plt.ylabel('Rank')
-        plt.title('Rank of LR Approximation')
         plt.grid(True, which="both", ls="-", alpha=0.5)
-        plt.savefig('part2_e_lr_approx_ranks.png', dpi=300, bbox_inches='tight', pad_inches=0)
-        plt.show()
+        if save:
+            plt.savefig('part2_e_lr_approx_ranks.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
+        if show:
+            plt.show()
         plt.close()
 
         plt.loglog(tau_values, errors, 'o', label='Error')
         plt.loglog(tau_values, theoretical_errors, 'x', label='Theoretical error')
         plt.xlabel('τ')
         plt.ylabel('Relative Error (2-norm)')
-        plt.title('Relative Error of LR Approximation')
         plt.legend()
         plt.grid(True, which="both", ls="-", alpha=0.5)
-        plt.savefig('part2_e_lr_approx_error.png', dpi=300, bbox_inches='tight', pad_inches=0)
-        plt.show()
+        if save:
+            plt.savefig('part2_e_lr_approx_error.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
+        if show:
+            plt.show()
         plt.close()
 
         plt.semilogx(tau_values, times, 'o')
         plt.xlabel('τ')
-        plt.ylabel('Computation Time (s)')
-        plt.title('Computation Time for LR Approximation')
+        plt.ylabel('Time (s)')
         plt.grid(True, which="both", ls="-", alpha=0.5)
-        plt.savefig('part2_e_lr_approx_complexity.png', dpi=300, bbox_inches='tight', pad_inches=0)
-        plt.show()
+        if save:
+            plt.savefig('part2_e_lr_approx_complexity.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
+        if show:
+            plt.show()
         plt.close()
 
         print(f"τ values: {tau_values}")
@@ -223,9 +226,9 @@ if __name__ == '__main__':
         print(f"Errors: {errors}")
         print(f"Times: {times}")
 
-    if section == 'f':
+    if 'f' in sections:
         # Run analysis and plot results
-        tau_values, results_exact, results_submatrix, results_diagonal = fast_relative_error_estimation()
+        tau_values, results_exact, results_submatrix, results_vector = fast_relative_error_estimation()
 
         # Extract results
         errors_exact = [r[0] for r in results_exact]
@@ -236,49 +239,54 @@ if __name__ == '__main__':
         ns_sub = [r[1] for r in results_submatrix]
         times_sub = [r[2] for r in results_submatrix]
 
-        errors_diag = [r[0] for r in results_diagonal]
-        ns_diag = [r[1] for r in results_diagonal]
-        times_diag = [r[2] for r in results_diagonal]
+        errors_diag = [r[0] for r in results_vector]
+        ns_diag = [r[1] for r in results_vector]
+        times_diag = [r[2] for r in results_vector]
 
         plt.loglog(tau_values, errors_exact, 'o', label='Original')
-        plt.loglog(tau_values, errors_sub, 's', label='Submatrix')
-        plt.loglog(tau_values, errors_diag, '^', label='Diagonal')
+        plt.loglog(tau_values, errors_sub, 's', label='FEE1')
+        plt.loglog(tau_values, errors_diag, '^', label='FEE2')
         plt.xlabel('τ')
         plt.ylabel('Relative Error')
-        plt.title('Fast Relative Error Comparison')
         plt.legend()
         plt.grid(True, which="both", ls="-", alpha=0.5)
-        plt.savefig('part2_f_errors.png', dpi=300, bbox_inches='tight', pad_inches=0)
-        plt.show()
+        if save:
+            plt.savefig('part2_f_errors.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
+        if show:
+            plt.show()
         plt.close()
 
         plt.semilogx(tau_values, ranks, 'o', label='Rank')
         plt.xlabel('τ')
         plt.ylabel('Rank')
-        plt.title('Original Ranks')
         plt.grid(True, which="both", ls="-", alpha=0.5)
-        plt.savefig('part2_f_ranks.png', dpi=300, bbox_inches='tight', pad_inches=0)
-        plt.show()
+        if save:
+            plt.savefig('part2_f_ranks.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
+        if show:
+            plt.show()
         plt.close()
 
-        plt.semilogx(tau_values, ns_sub, 's', label='Submatrix')
-        plt.semilogx(tau_values, ns_diag, '^', label='Diagonal')
+        plt.semilogx(tau_values, ns_sub, 's', color='C1', label='FEE1')
+        plt.semilogx(tau_values, ns_diag, '^', color='C2', label='FEE2')
         plt.xlabel('τ')
         plt.ylabel('n')
-        plt.title('Final n')
         plt.legend()
         plt.grid(True, which="both", ls="-", alpha=0.5)
-        plt.savefig('part2_f_final_n.png', dpi=300, bbox_inches='tight', pad_inches=0)
-        plt.show()
+        if save:
+            plt.savefig('part2_f_final_n.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
+        if show:
+            plt.show()
         plt.close()
 
         plt.loglog(tau_values, times_exact, 'o', label='Original')
-        plt.loglog(tau_values, times_sub, 's', label='Submatrix')
-        plt.loglog(tau_values, times_diag, '^', label='Diagonal')
+        plt.loglog(tau_values, times_sub, 's', label='FEE1')
+        plt.loglog(tau_values, times_diag, '^', label='FEE2')
         plt.xlabel('τ')
-        plt.ylabel('time (s)')
-        plt.title('Computation Time Comparison')
+        plt.ylabel('Time (s)')
         plt.legend()
         plt.grid(True, which="both", ls="-", alpha=0.5)
-        plt.savefig('part2_f_complexity.png', dpi=300, bbox_inches='tight', pad_inches=0)
-        plt.show()
+        if save:
+            plt.savefig('part2_f_complexity.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
+        if show:
+            plt.show()
+        plt.close()

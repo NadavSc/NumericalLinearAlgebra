@@ -43,7 +43,7 @@ def error_estimation_algorithm1(A, U2, B1, tau_eps=1e-1):
 
 
 def error_estimation_algorithm2(A, U2, B1, tau_eps=1e-1):
-    """Second error estimation algorithm using diagonal elements"""
+    """Second error estimation algorithm using vector elements"""
     N = A.shape[0]
     l = 1
     n = 5
@@ -187,47 +187,63 @@ def run_analysis(N=128, lambda_=1, W=128, theta=0, D=128, B0=5):
 
 
 if __name__ == '__main__':
-    section = 'i'
+    sections = ['i']   # Possible sections: 'i', 'j'
+    show = True
+    save = False
 
-    if section == 'i':
-        tau_values, computation_time_lr, computation_time_fast_lr, lr_errors, fast_lr_errors, ranks_lr, ranks_fast_lr = run_analysis()
+    B0 = 5
+    lambda_ = 1
+    W = 128*lambda_
+    theta = 0
+    D = W
 
-        plt.semilogx(tau_values, computation_time_lr, 'o', label='LR Approx')
-        plt.semilogx(tau_values, computation_time_fast_lr, 's', label='Fast LR Approx')
+
+    if 'i' in sections:
+        tau_values, computation_time_lr, computation_time_fast_lr, lr_errors, fast_lr_errors, ranks_lr, ranks_fast_lr = run_analysis(lambda_=lambda_,
+                                                                                                                                     W=W,
+                                                                                                                                     theta=theta,
+                                                                                                                                     D=D,
+                                                                                                                                     B0=B0)
+
+        plt.semilogx(tau_values, computation_time_lr, 'o', label='LRA Matrix')
+        plt.semilogx(tau_values, computation_time_fast_lr, 's', label='FLRA Matrix')
         plt.grid(True, which="both", ls="-", alpha=0.5)
         plt.xlabel('τ')
-        plt.ylabel('time (s)')
+        plt.ylabel('Time (s)')
         plt.legend()
-        plt.title('LR Approximation Computation Time')
-        plt.savefig('part3_i_computation_time.png', dpi=300, bbox_inches='tight', pad_inches=0)
-        plt.show()
+        if save:
+            plt.savefig('part3_i_computation_time.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
+        if show:
+            plt.show()
         plt.close()
 
         # Plot actual vs target error
-        plt.loglog(tau_values, lr_errors, 'o', label='LR Approx')
-        plt.loglog(tau_values, fast_lr_errors, 's', label='Fast LR Approx')
+        plt.loglog(tau_values, lr_errors, 'o', label='LRA Matrix')
+        plt.loglog(tau_values, fast_lr_errors, 's', label='FLRA Matrix')
         plt.grid(True, which="both", ls="-", alpha=0.5)
         plt.xlabel('τ')
-        plt.ylabel('Relative Error')
+        plt.ylabel('Relative Error (2-norm)')
         plt.legend()
-        plt.title('LR Approximation Relative Error')
-        plt.savefig('part3_i_errors.png', dpi=300, bbox_inches='tight', pad_inches=0)
-        plt.show()
+        if save:
+            plt.savefig('part3_i_errors.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
+        if show:
+            plt.show()
         plt.close()
 
         # Create a scatter plot of rank vs tau
-        plt.semilogx(tau_values, ranks_lr, 'o', label='LR Approx')
-        plt.semilogx(tau_values, ranks_fast_lr, 's', label='Fast LR Approx')
+        plt.semilogx(tau_values, ranks_lr, 'o', label='LRA Matrix')
+        plt.semilogx(tau_values, ranks_fast_lr, 's', label='FLRA Matrix')
         plt.grid(True, which="both", ls="-", alpha=0.5)
         plt.legend()
         plt.xlabel('τ')
-        plt.ylabel('rank')
-        plt.title('Rank of LR Approximation Methods')
-        plt.savefig('part3_i_ranks.png', dpi=300, bbox_inches='tight', pad_inches=0)
-        plt.show()
+        plt.ylabel('Rank')
+        if save:
+            plt.savefig('part3_i_ranks.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
+        if show:
+            plt.show()
         plt.close()
 
-    if section == 'j':
+    if 'j' in sections:
         def run_comparison(N=128, lambda_=1, W=128, theta=0, D=128, B0=5):
             """Run comparison between original and new implementations"""
             delta = lambda_ / 10
@@ -244,7 +260,7 @@ if __name__ == '__main__':
             for tau in tau_values:
                 # Original implementation
                 U2, B1, rank, time_orig, estimated_error = randomized_lr_approximation(A, B0, tau, 'original')
-                error_orig = np.linalg.norm(A - U2 @ B1, 'fro') / np.linalg.norm(A, 'fro')
+                error_orig = np.linalg.norm(A - U2 @ B1) / np.linalg.norm(A)
                 results['original']['times'].append(time_orig)
                 results['original']['errors'].append(error_orig)
                 results['original']['ranks'].append(rank)
@@ -268,40 +284,43 @@ if __name__ == '__main__':
         tau_values, results = run_comparison()
 
         # Computation Time
-        plt.semilogx(tau_values, results['original']['times'], 'o', label='Original')
-        plt.semilogx(tau_values, results['alg1']['times'], 's', label='Fast Error Estimation 1')
-        plt.semilogx(tau_values, results['alg2']['times'], '^', label='Fast Error Estimation 2')
+        plt.semilogx(tau_values, results['original']['times'], 'o', label='FLRA Matrix')
+        plt.semilogx(tau_values, results['alg1']['times'], 's', label='FEE1-LRA Matrix')
+        plt.semilogx(tau_values, results['alg2']['times'], '^', label='FEE2-LRA Matrix')
         plt.grid(True, which="both", ls="-", alpha=0.5)
         plt.xlabel('τ')
-        plt.ylabel('Computation Time (s)')
+        plt.ylabel('Time (s)')
         plt.legend()
-        plt.title('Computation Time Comparison')
-        plt.savefig('part3_j_computation_time.png', dpi=300, bbox_inches='tight', pad_inches=0)
-        plt.show()
+        if save:
+            plt.savefig('part3_j_computation_time.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
+        if show:
+            plt.show()
         plt.close()
 
         # Error Comparison
-        plt.loglog(tau_values, results['original']['errors'], 'o', label='Original')
-        plt.loglog(tau_values, results['alg1']['errors'], 's', label='Fast Error Estimation 1')
-        plt.loglog(tau_values, results['alg2']['errors'], '^', label='Fast Error Estimation 2')
+        plt.loglog(tau_values, results['original']['errors'], 'o', label='FLRA Matrix')
+        plt.loglog(tau_values, results['alg1']['errors'], 's', label='FEE1-FLRA Matrix')
+        plt.loglog(tau_values, results['alg2']['errors'], '^', label='FEE2-FLRA Matrix')
         plt.grid(True, which="both", ls="-", alpha=0.5)
         plt.xlabel('τ')
-        plt.ylabel('Relative Error')
+        plt.ylabel('Relative Error (2-norm)')
         plt.legend()
-        plt.title('Error Comparison')
-        plt.savefig('part3_j_errors.png', dpi=300, bbox_inches='tight', pad_inches=0)
-        plt.show()
+        if save:
+            plt.savefig('part3_j_errors.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
+        if show:
+            plt.show()
         plt.close()
 
         # Rank Comparison
-        plt.semilogx(tau_values, results['original']['ranks'], 'o', label='Original')
-        plt.semilogx(tau_values, results['alg1']['ranks'], 's', label='Fast Error Estimation 1')
-        plt.semilogx(tau_values, results['alg2']['ranks'], '^', label='Fast Error Estimation 2')
+        plt.semilogx(tau_values, results['original']['ranks'], 'o', label='FLRA Matrix')
+        plt.semilogx(tau_values, results['alg1']['ranks'], 's', label='FEE1-FLRA Matrix')
+        plt.semilogx(tau_values, results['alg2']['ranks'], '^', label='FEE2-FLRA Matrix')
         plt.grid(True, which="both", ls="-", alpha=0.5)
         plt.xlabel('τ')
-        plt.ylabel('rank')
-        plt.title('Rank Comparison')
+        plt.ylabel('Rank')
         plt.legend()
-        plt.savefig('part3_j_rank.png', dpi=300, bbox_inches='tight', pad_inches=0)
-        plt.show()
+        if save:
+            plt.savefig('part3_j_rank.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
+        if show:
+            plt.show()
         plt.close()

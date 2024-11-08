@@ -70,20 +70,19 @@ def plot_fit_rank(threshold, save=False, log=False):
         plot_func(N_fit, rank_fit, '-', label=f'Fitted curve: Rank = {a:.2f} * N^{b:.2f}')
     plt.xlabel('Number of Antennas (N)')
     plt.ylabel('Rank')
-    plt.title(f'Matrix Rank - {threshold}')
     plt.legend()
     plt.grid(True, which="both", ls="-", alpha=0.5)
     if save:
-        plt.savefig(f'part1_b_rank_{threshold[2:]}.png', dpi=300, bbox_inches='tight', pad_inches=0)
+        plt.savefig(f'part1_b_rank_{threshold[2:]}.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
     if show:
         plt.show()
     plt.close()
 
 
 if __name__ == '__main__':
-    sections = ['a', 'b']  # Possible sections: 'a', 'b'
-    show = False
-    save = True
+    sections = ['a']  # Possible sections: 'a', 'b'
+    show = True
+    save = False
     for section in sections:
         if section == 'a':
             lambda_ = 1
@@ -106,10 +105,9 @@ if __name__ == '__main__':
             plt.xticks(x_ticks-1, labels=x_ticks)
             plt.yticks(y_ticks-1, labels=y_ticks)
             plt.colorbar()
-            plt.title('Absolute Values of Matrix A')
             plt.xlabel('Transmitter Index')
             plt.ylabel('Receiver Index')
-            plt.savefig(r'part1_a_constructA.png', dpi=300, bbox_inches='tight', pad_inches=0)
+            plt.savefig(r'part1_a_constructA.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
             if show:
                 plt.show()
             plt.close()
@@ -120,15 +118,13 @@ if __name__ == '__main__':
             plt.scatter(np.arange(len(s_values)) + 1, s_values)
             plt.yscale('log')  # Set y-axis to log scale
             plt.grid(True, which='both', linestyle='--', linewidth=0.5)  # Add grid
-            plt.title('Singular Values of Matrix A')
-            plt.xlabel('Transmitter Index')
+            plt.xlabel('Index')
             plt.ylabel('Singular Values')
-            plt.savefig(r'part1_a_svdA_log.png', dpi=300, bbox_inches='tight', pad_inches=0)
+            plt.savefig(r'part1_a_svdA_log.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
             if show:
                 plt.show()
             plt.close()
 
-        ## TODO: add proper asymptotic lines to figures
         if section == 'b':
             lambda_ = 1
             delta = lambda_ / 10
@@ -177,28 +173,26 @@ if __name__ == '__main__':
             plt.loglog(N_theory, time_theory, 'k--', label='O(N³) trend')
 
             plt.xlabel('Number of Antennas (N)')
-            plt.ylabel('SVD Computation Time (s)')
-            plt.title('SVD Computation Complexity')
+            plt.ylabel('Time (s)')
             plt.legend()
             plt.grid(True, which="both", ls="-", alpha=0.5)
             if save:
-                plt.savefig('part1_b_svd_complexity.png', dpi=300, bbox_inches='tight', pad_inches=0)
+                plt.savefig('part1_b_svd_complexity.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
             if show:
                 plt.show()
             plt.close()
 
             for case, data in results.items():
-                plt.plot(data['N'], [r[0] for r in data['ranks']], 'o', label=f'{case}, τ=1e-2')
-                plt.plot(data['N'], [r[1] for r in data['ranks']], 's', label=f'{case}, τ=1e-5')
-                plt.plot(data['N'], [r[2] for r in data['ranks']], '^', label=f'{case}, τ=1e-8')
+                plt.loglog(data['N'], [r[0] for r in data['ranks']], 'o', label=f'{case}, τ=1e-2')
+                plt.loglog(data['N'], [r[1] for r in data['ranks']], 's', label=f'{case}, τ=1e-5')
+                plt.loglog(data['N'], [r[2] for r in data['ranks']], '^', label=f'{case}, τ=1e-8')
 
             plt.xlabel('Number of Antennas (N)')
             plt.ylabel('Rank')
-            plt.title('Matrix Rank for Different Truncation Thresholds')
             plt.legend()
             plt.grid(True, which="both", ls="-", alpha=0.5)
             if save:
-                plt.savefig('part1_b_rank_log.png', dpi=300, bbox_inches='tight', pad_inches=0)
+                plt.savefig('part1_b_rank_log.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
             if show:
                 plt.show()
             plt.close()
@@ -214,14 +208,13 @@ if __name__ == '__main__':
                 plt.loglog(data['N'], [c[2] for c in data['condition']], '^', label=f'{case}, τ=1e-8')
                 plt.xlabel('Number of Antennas (N)')
                 plt.ylabel('Condition Number')
-                plt.title(f'Condition Number of Matrix A')
                 plt.legend()
                 plt.grid(True, which="both", ls="-", alpha=0.5)
                 plt.legend(loc='center left', bbox_to_anchor=(-0.5, 0.5), ncol=1,
                            columnspacing=1.5, handletextpad=1.5, borderaxespad=0.5)
                 plt.subplots_adjust(left=0.3)
             if save:
-                plt.savefig(f'part1_b_condition_all_log.png', dpi=300, bbox_inches='tight', pad_inches=0)
+                plt.savefig(f'part1_b_condition_all_log.png', dpi=300, bbox_inches='tight', pad_inches=0.05)
             if show:
                 plt.show()
             plt.close()

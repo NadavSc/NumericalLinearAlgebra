@@ -270,3 +270,51 @@
 [2024-10-26 21:41:01,929 INFO] Section B: SVD has been calculated
 [2024-10-26 21:50:25,336 INFO] Section B: A with D = W²/lambda, W=1024, N=10241 has been constructed
 [2024-10-26 22:07:13,051 INFO] Section B: SVD has been calculated
+[2024-10-30 11:48:44,355 INFO] Section A: A has been constructed
+[2024-10-30 11:48:45,510 INFO] Section A: SVD has been calculated
+[2024-10-30 11:49:09,776 INFO] Section A: A has been constructed
+[2024-10-30 11:49:10,407 INFO] Section A: SVD has been calculated
+[2024-10-30 11:49:26,226 INFO] Section A: A has been constructed
+[2024-10-30 11:49:26,868 INFO] Section A: SVD has been calculated
+[2024-10-30 11:49:51,957 INFO] Section A: A has been constructed
+[2024-10-30 11:49:52,586 INFO] Section A: SVD has been calculated
+[2024-10-30 11:51:57,045 INFO] Section A: A has been constructed
+[2024-10-30 11:51:57,679 INFO] Section A: SVD has been calculated
+[2024-10-30 11:51:58,612 INFO] results_b.pkl has been loaded
+[2024-10-30 11:52:58,318 INFO] Section A: A has been constructed
+[2024-10-30 11:52:58,925 INFO] Section A: SVD has been calculated
+[2024-10-30 11:52:59,547 INFO] results_b.pkl has been loaded
+[2024-10-30 11:58:49,447 INFO] Section A: A has been constructed
+[2024-10-30 11:58:50,208 INFO] Section A: SVD has been calculated
+[2024-10-30 12:01:15,471 INFO] Section A: A has been constructed
+[2024-10-30 12:01:16,194 INFO] Section A: SVD has been calculated
+[2024-10-30 12:01:22,122 INFO] Section A: A has been constructed
+[2024-10-30 12:01:22,805 INFO] Section A: SVD has been calculated
+[2024-10-30 12:01:23,481 INFO] results_b.pkl has been loaded
+[2024-10-30 12:06:02,968 INFO] Section A: A has been constructed
+[2024-10-30 12:06:03,589 INFO] Section A: SVD has been calculated
+[2024-10-30 12:06:04,245 INFO] results_b.pkl has been loaded
+[2024-10-30 12:39:43,256 INFO] LR tau=1e-10 approximation has been calculated
+[2024-10-30 12:39:54,685 INFO] LR tau=1e-09 approximation has been calculated
+[2024-10-30 12:40:06,982 INFO] LR tau=1e-08 approximation has been calculated
+[2024-10-30 12:40:18,402 INFO] LR tau=1e-07 approximation has been calculated
+[2024-10-30 12:40:29,866 INFO] LR tau=1e-06 approximation has been calculated
+[2024-10-30 12:40:41,295 INFO] LR tau=1e-05 approximation has been calculated
+[2024-10-30 12:40:52,736 INFO] LR tau=0.0001 approximation has been calculated
+[2024-10-30 12:41:04,297 INFO] LR tau=0.001 approximation has been calculated
+[2024-10-30 12:41:15,711 INFO] LR tau=0.01 approximation has been calculated
+[2024-10-30 12:41:27,183 INFO] LR tau=0.1 approximation has been calculated
+[2024-10-30 14:20:02,651 INFO] LR tau=1e-10 approximation has been calculated
+[2024-10-30 14:20:13,933 INFO] LR tau=1e-09 approximation has been calculated
+[2024-10-30 14:20:25,618 INFO] LR tau=1e-08 approximation has been calculated
+[2024-10-30 14:20:38,350 INFO] LR tau=1e-07 approximation has been calculated
+[2024-10-30 14:20:50,119 INFO] LR tau=1e-06 approximation has been calculated
+[2024-10-30 14:21:01,808 INFO] LR tau=1e-05 approximation has been calculated
+[2024-10-30 14:21:13,982 INFO] LR tau=0.0001 approximation has been calculated
+[2024-10-30 14:21:25,169 INFO] LR tau=0.001 approximation has been calculated
+[2024-10-30 14:21:36,782 INFO] LR tau=0.01 approximation has been calculated
+[2024-10-30 14:21:49,889 INFO] LR tau=0.1 approximation has been calculated
+[2024-10-30 16:16:05,097 INFO] results_b.pkl has been loaded
+[2024-11-08 13:25:14,588 INFO] results_b.pkl has been loaded
+[2024-11-08 13:25:35,444 INFO] Section A: A has been constructed
+[2024-11-08 13:25:37,517 INFO] Section A: SVD has been calculated
